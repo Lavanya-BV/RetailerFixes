@@ -89,19 +89,8 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 **logger.js**
 - Handles application logging using `pino`.
 
-#### Code Quality & Best Practices
-- All components use proper PropTypes with shape validation.
-- UI is styled using styled-components.
-- No hardcoded static data in components; all constants are imported.
-- Code is split into logical modules and follows React best practices.
-- Logging is implemented for key events and calculations.
-- Unit tests are provided for reward calculation logic.
-
 #### How to Run
 1. Clone the repository
 2. Run `npm install` to install dependencies
 3. Run `npm start` to launch the app
 4. Run `npm test` to execute unit tests
-
-#### Screenshots & Test Results
-Add screenshots of the working application and test results here.
