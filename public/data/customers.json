@@ -1,0 +1,49 @@
+
+[
+  { "customerId": "C001", "transactions": [
+    { "transactionId": "T001", "amount": 100, "date": "2025-07-01" },
+    { "transactionId": "T002", "amount": 200, "date": "2025-07-15" }
+  ] },
+  { "customerId": "C002", "transactions": [
+    { "transactionId": "T003", "amount": 150, "date": "2025-06-10" }
+  ] },
+  { "customerId": "C003", "transactions": [
+    { "transactionId": "T004", "amount": 160, "date": "2025-05-20" }
+  ] },
+  { "customerId": "C004", "transactions": [
+    { "transactionId": "T005", "amount": 153, "date": "2025-07-05" }
+  ] },
+  { "customerId": "C005", "transactions": [
+    { "transactionId": "T006", "amount": 134, "date": "2025-06-12" }
+  ] },
+  { "customerId": "C006", "transactions": [
+    { "transactionId": "T007", "amount": 1340, "date": "2025-05-25" }
+  ] },
+  { "customerId": "C007", "transactions": [
+    { "transactionId": "T008", "amount": 245, "date": "2025-07-10" }
+  ] },
+  { "customerId": "C008", "transactions": [
+    { "transactionId": "T009", "amount": 390, "date": "2025-06-18" }
+  ] },
+  { "customerId": "C009", "transactions": [
+    { "transactionId": "T010", "amount": 650, "date": "2025-05-30" }
+  ] },
+  { "customerId": "C010", "transactions": [
+    { "transactionId": "T011", "amount": 350, "date": "2025-07-20" }
+  ] },
+  { "customerId": "C011", "transactions": [
+    { "transactionId": "T012", "amount": 750, "date": "2025-06-22" }
+  ] },
+  { "customerId": "C012", "transactions": [
+    { "transactionId": "T013", "amount": 520, "date": "2025-05-15" }
+  ] },
+  { "customerId": "C013", "transactions": [
+    { "transactionId": "T014", "amount": 350, "date": "2025-07-25" }
+  ] },
+  { "customerId": "C014", "transactions": [
+    { "transactionId": "T015", "amount": 980, "date": "2025-06-28" }
+  ] },
+  { "customerId": "C015", "transactions": [
+    { "transactionId": "T016", "amount": 930, "date": "2025-05-05" }
+  ] }
+]
