@@ -45,5 +45,8 @@
   ] },
   { "customerId": "C015", "transactions": [
     { "transactionId": "T016", "amount": 930, "date": "2025-05-05" }
+  ] },
+    { "customerId": "C016", "transactions": [
+    { "transactionId": "T017", "amount": 340, "date": "2025-06-14" }
   ] }
 ]

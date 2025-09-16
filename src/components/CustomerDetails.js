@@ -15,10 +15,8 @@ import {
 } from "../constants";
 
 const CustomerDetails = ({ selectedCustomer, monthYearFilter }) => {
-  let filteredTransactions = [];
-  let monthlyPoints = [];
   // Calculate per-month reward points
-  monthlyPoints = monthYearFilter.map(({ month, year }) => {
+  const monthlyPoints = monthYearFilter.map(({ month, year }) => {
     const transactions = selectedCustomer.transactions.filter((transaction) => {
       const transactionDate = new Date(transaction.date);
       return (
@@ -37,7 +35,7 @@ const CustomerDetails = ({ selectedCustomer, monthYearFilter }) => {
     };
   });
   // Flatten all transactions for last 3 months
-  filteredTransactions = monthlyPoints.flatMap((mp) => mp.transactions);
+  const filteredTransactions = monthlyPoints.flatMap((mp) => mp.transactions);
   logger.info("Customer selected and details displayed.", {
     customerId: selectedCustomer.customerId,
     monthYearFilter,
@@ -89,7 +87,7 @@ const CustomerDetails = ({ selectedCustomer, monthYearFilter }) => {
                 {AMOUNT_LABEL} ${transaction.amount}
               </p>
               <p>
-                {DATE_LABEL} {transaction.date}
+                {DATE_LABEL} {new Date(transaction.date).toLocaleDateString()}
               </p>
               <p>
                 {POINTS_EARNED_LABEL}{" "}
@@ -106,7 +104,7 @@ const CustomerDetails = ({ selectedCustomer, monthYearFilter }) => {
 export default CustomerDetails;
 CustomerDetails.propTypes = {
   selectedCustomer: PropTypes.shape({
-    customerId: PropTypes.string.isRequired,
+      customerId: PropTypes.string.isRequired,
     transactions: PropTypes.arrayOf(
       PropTypes.shape({
         amount: PropTypes.number.isRequired,
@@ -117,7 +115,7 @@ CustomerDetails.propTypes = {
         date: PropTypes.string.isRequired,
       })
     ).isRequired,
-  }),
+    }).isRequired,
   monthYearFilter: PropTypes.arrayOf(
     PropTypes.shape({
       month: PropTypes.string.isRequired,

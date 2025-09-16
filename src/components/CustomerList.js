@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useTable } from "react-table";
 import { months, years, CUSTOMERS_PER_PAGE } from "../constants";
 import logger from "../logger/logger";
@@ -26,31 +26,30 @@ const CustomerList = ({
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
-  const validCustomers = Array.isArray(customers)
-    ? customers.filter((customer) => {
-        if (
-          !customer ||
-          !customer.customerId ||
-          !Array.isArray(customer.transactions) ||
-          customer.transactions.length === 0
-        ) {
-          return false;
-        }
-        // Only include customers with at least one transaction in selected months/years
-        const hasValidTransaction = customer.transactions.some(
-          (transaction) => {
-            if (!transaction.date) return false;
-            const transactionDate = new Date(transaction.date);
-            return monthYearFilter.some(
-              ({ month, year }) =>
-                transactionDate.getMonth() + 1 === parseInt(month) &&
-                transactionDate.getFullYear() === parseInt(year)
-            );
-          }
+  const validCustomers = useMemo(() => {
+    if (!Array.isArray(customers)) return [];
+    return customers.filter((customer) => {
+      if (
+        !customer ||
+        !customer.customerId ||
+        !Array.isArray(customer.transactions) ||
+        customer.transactions.length === 0
+      ) {
+        return false;
+      }
+      // Only include customers with at least one transaction in selected months/years
+      const hasValidTransaction = customer.transactions.some((transaction) => {
+        if (!transaction.date) return false;
+        const transactionDate = new Date(transaction.date);
+        return monthYearFilter.some(
+          ({ month, year }) =>
+            transactionDate.getMonth() + 1 === parseInt(month) &&
+            transactionDate.getFullYear() === parseInt(year)
         );
-        return hasValidTransaction;
-      })
-    : [];
+      });
+      return hasValidTransaction;
+    });
+  }, [customers, monthYearFilter]);
 
   const columns = React.useMemo(
     () => [
@@ -71,28 +70,30 @@ const CustomerList = ({
     []
   );
 
-  const customerTableData = Array.isArray(validCustomers)
-    ? validCustomers.map((customer) => {
-        const totalPoints = customer.transactions.reduce(
-          (total, transaction) => {
-            return total + calculateRewardPoints(transaction.amount);
-          },
-          0
-        );
-        return {
-          ...customer,
-          totalPoints,
-        };
-      })
-    : [];
+  const customerTableData = useMemo(() => {
+    if (!Array.isArray(validCustomers)) return [];
+    return validCustomers.map((customer) => {
+      const totalPoints = customer.transactions.reduce(
+        (total, transaction) => {
+          return total + calculateRewardPoints(transaction.amount);
+        },
+        0
+      );
+      return {
+        ...customer,
+        totalPoints,
+      };
+    });
+  }, [validCustomers]);
 
   // Slice customerTableData for pagination before passing to useTable
-  const paginatedData = Array.isArray(customerTableData)
-    ? customerTableData.slice(
-        (currentPage - 1) * CUSTOMERS_PER_PAGE,
-        currentPage * CUSTOMERS_PER_PAGE
-      )
-    : [];
+  const paginatedData = useMemo(() => {
+    if (!Array.isArray(customerTableData)) return [];
+    return customerTableData.slice(
+      (currentPage - 1) * CUSTOMERS_PER_PAGE,
+      currentPage * CUSTOMERS_PER_PAGE
+    );
+  }, [customerTableData, currentPage]);
 
   const { getTableProps, getTableBodyProps, headerGroups, prepareRow, rows } =
     useTable({ columns, data: paginatedData });
@@ -122,6 +123,40 @@ const CustomerList = ({
     setCurrentPage((prevPage) => Math.max(1, prevPage - 1));
   };
 
+  // Refactored table body rendering logic
+  let tableBodyContent;
+  if (rows && rows.length > 0) {
+    tableBodyContent = rows.map((row) => {
+      prepareRow(row);
+      if (row && row.original && row.original.customerId) {
+        return (
+          <Tr
+            {...row.getRowProps()}
+            onClick={() => handleCustomerSelect(row.original)}
+          >
+            {row.cells.map((cell) => (
+              <Td {...cell.getCellProps()}>{cell.render("Cell")}</Td>
+            ))}
+          </Tr>
+        );
+      } else {
+        return (
+          <Tr>
+            <Td colSpan="3">{INVALID_DATA_MSG}</Td>
+          </Tr>
+        );
+      }
+    });
+  } else {
+    tableBodyContent = (
+      <Tr>
+        <Td colSpan="3">{NO_CUSTOMERS_MSG}</Td>
+      </Tr>
+    );
+  }
+
+  const noCustomersAvailable = rows.length === 0;
+
   return (
     <>
       <>
@@ -141,6 +176,34 @@ const CustomerList = ({
               return { month, year };
             });
             setMonthYearFilter(newFilter);
+            // Clear selected customer if no customers available after filter change
+            setTimeout(() => {
+              if (
+                Array.isArray(customers) &&
+                customers.filter((customer) => {
+                  if (
+                    !customer ||
+                    !customer.customerId ||
+                    !Array.isArray(customer.transactions) ||
+                    customer.transactions.length === 0
+                  ) {
+                    return false;
+                  }
+                  const hasValidTransaction = customer.transactions.some((transaction) => {
+                    if (!transaction.date) return false;
+                    const transactionDate = new Date(transaction.date);
+                    return newFilter.some(
+                      ({ month, year }) =>
+                        transactionDate.getMonth() + 1 === parseInt(month) &&
+                        transactionDate.getFullYear() === parseInt(year)
+                    );
+                  });
+                  return hasValidTransaction;
+                }).length === 0
+              ) {
+                setSelectedCustomer(null);
+              }
+            }, 0);
           }}
         >
           {years.map((year) =>
@@ -166,45 +229,17 @@ const CustomerList = ({
             </Tr>
           ))}
         </thead>
-        <tbody {...getTableBodyProps()}>
-          {rows && rows.length > 0 ? (
-            rows.map((row) => {
-              prepareRow(row);
-              if (row && row.original && row.original.customerId) {
-                return (
-                  <Tr
-                    {...row.getRowProps()}
-                    onClick={() => handleCustomerSelect(row.original)}
-                  >
-                    {row.cells.map((cell) => (
-                      <Td {...cell.getCellProps()}>{cell.render("Cell")}</Td>
-                    ))}
-                  </Tr>
-                );
-              } else {
-                return (
-                  <Tr>
-                    <Td colSpan="3">{INVALID_DATA_MSG}</Td>
-                  </Tr>
-                );
-              }
-            })
-          ) : (
-            <Tr>
-              <Td colSpan="3">{NO_CUSTOMERS_MSG}</Td>
-            </Tr>
-          )}
-        </tbody>
+        <tbody {...getTableBodyProps()}>{tableBodyContent}</tbody>
       </Table>
       <>
-        <Button onClick={handlePreviousPage} disabled={currentPage === 1}>
+        <Button onClick={handlePreviousPage} disabled={currentPage === 1 || noCustomersAvailable}>
           {PREVIOUS_BTN}
         </Button>
         <Button
           onClick={handleNextPage}
           disabled={
             currentPage ===
-            Math.ceil(validCustomers.length / CUSTOMERS_PER_PAGE)
+              Math.ceil(validCustomers.length / CUSTOMERS_PER_PAGE) || noCustomersAvailable
           }
         >
           {NEXT_BTN}
