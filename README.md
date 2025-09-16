@@ -22,7 +22,6 @@ You may also see any lint errors in the console.
 Launches the test runner in the interactive watch mode.\
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-
 #### How It Works
 
 - **Customer Data:** The app uses mock customer data stored in `public/data/customers.json`. Each customer has a unique `customerId` and a list of transactions, each with `transactionId`, `amount`, and `date`.
@@ -94,3 +93,20 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 2. Run `npm install` to install dependencies
 3. Run `npm start` to launch the app
 4. Run `npm test` to execute unit tests
+
+
+#### Project Images
+
+Below are previews of the images available in the `public/images` folder:
+
+**Customer Details**
+![Customer Details](public/images/customerDetails.png)
+
+**Default 3 Months**
+![Default 3 Months](public/images/default3Months.png)
+
+**No Customer Available**
+![No Customer Available](public/images/noCustomerAvailable.png)
+
+**Test Cases**
+![Test Cases](public/images/testCases.png)
